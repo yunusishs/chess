@@ -42,7 +42,7 @@ for r in range(1,9):
     board.create_text(size/4,r*size,text=str(9-r), font=('consolas',16))
 
 for f in letters:
-    board.create_text(file_to_x(f),size*9-size/4,text=f.upper(), font=('consolas',16))
+    board.create_text(file_to_x(f),size*9-size/4,text=f.lower(), font=('consolas',16))
     
 #pieces
 
@@ -124,6 +124,9 @@ black_pieces.append(rook('h', 8, 'black'))
 black_pieces.append(queen('d', 8, 'black'))
 black_pieces.append(king('e', 8, 'black'))
 
+#movement
+selection = board.create_rectangle(0,0,0,0, outline='black',width=3)
+
 def check_click(event):
     file = x_to_file(event.x)
     rank = y_to_rank(event.y)
@@ -131,7 +134,11 @@ def check_click(event):
         file = None
     if rank not in range(1,9):
         rank = None
-    print(file,rank)
-    
+    for piece in white_pieces:
+        if x_to_file(board.coords(piece)[0])==file and y_to_rank(board.coords(piece)[1])==rank:
+            board.coords(selection,file_to_x(file)+size/2,rank_to_y(rank)+size/2, file_to_x(file)-size/2,rank_to_y(rank)-size/2)
+    for piece in black_pieces:
+        if x_to_file(board.coords(piece)[0])==file and y_to_rank(board.coords(piece)[1])==rank:
+            board.coords(selection,file_to_x(file)+size/2,rank_to_y(rank)+size/2, file_to_x(file)-size/2,rank_to_y(rank)-size/2)
     
 board.bind_all('<Button-1>', check_click)
