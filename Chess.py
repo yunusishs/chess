@@ -1,5 +1,6 @@
 from tkinter import*
 
+w = Tk()
 #colour
 def _from_rgb(rgb):
     r, g, b = rgb
@@ -7,23 +8,46 @@ def _from_rgb(rgb):
 
 #code simplifier
 def x_to_file(x):
-    return letters[int((x+size/2)/size)-1]
+    if perspective == 'white':
+        return letters[int((x+size/2)/size)-1]
+    if perspective == 'black':
+        return letters[8-int((x+size/2)/size)]
 
 def y_to_rank(y):
-    return 9-int((y+size/2)/size)
+    if perspective == 'white':
+        return 9-int((y+size/2)/size)
+    if perspective == 'black':
+        return int((y+size/2)/size)
 
 def file_to_x(file):
-    return letters.index(file)*size+size
+    if perspective == 'white':
+        return letters.index(file)*size+size
+    if perspective == 'black':
+        return 9-letters.index(file)*size+size
 
 def rank_to_y(rank):
-    return (9-rank)*size
+    if perspective == 'white':
+        return (9-rank)*size
+    if perspective == 'black':
+        return 9-(9-rank)*size
 
+#perspective
+
+perspective = 'white'
+def flip_board():
+    global perspective
+    if perspective == 'white':
+        perspective = 'black'
+    if perspective == 'black':
+        perspective = 'white'
+
+board_flipper = Button(w, text='flip board', font=('consolas',16), command=flip_board)
+board_flipper.pack()
 #board squares
 
 letters='abcdefgh'
 size = 64
 
-w = Tk()
 
 board = Canvas(w, width=size*9,height=size*9)
 board.pack()
@@ -137,8 +161,34 @@ def check_click(event):
     for piece in white_pieces:
         if x_to_file(board.coords(piece)[0])==file and y_to_rank(board.coords(piece)[1])==rank:
             board.coords(selection,file_to_x(file)+size/2,rank_to_y(rank)+size/2, file_to_x(file)-size/2,rank_to_y(rank)-size/2)
+            if board.itemcget(piece, 'image') == 'pyimage1':
+                print('')
+            if board.itemcget(piece, 'image') == 'pyimage2':
+                print('N')
+            if board.itemcget(piece, 'image') == 'pyimage3':
+                print('B')
+            if board.itemcget(piece, 'image') == 'pyimage4':
+                print('R')
+            if board.itemcget(piece, 'image') == 'pyimage5':
+                print('Q')
+            if board.itemcget(piece, 'image') == 'pyimage6':
+                print('K')
     for piece in black_pieces:
         if x_to_file(board.coords(piece)[0])==file and y_to_rank(board.coords(piece)[1])==rank:
             board.coords(selection,file_to_x(file)+size/2,rank_to_y(rank)+size/2, file_to_x(file)-size/2,rank_to_y(rank)-size/2)
+            if board.itemcget(piece, 'image') == 'pyimage7':
+                print('')
+            if board.itemcget(piece, 'image') == 'pyimage8':
+                print('N')
+            if board.itemcget(piece, 'image') == 'pyimage9':
+                print('B')
+            if board.itemcget(piece, 'image') == 'pyimage10':
+                print('R')
+            if board.itemcget(piece, 'image') == 'pyimage11':
+                print('Q')
+            if board.itemcget(piece, 'image') == 'pyimage12':
+                print('K')
     
 board.bind_all('<Button-1>', check_click)
+
+        
