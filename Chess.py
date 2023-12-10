@@ -10,26 +10,26 @@ def _from_rgb(rgb):
 def x_to_file(x):
     if perspective == 'white':
         return letters[int((x+size/2)/size)-1]
-    if perspective == 'black':
+    elif perspective == 'black':
         return letters[8-int((x+size/2)/size)]
 
 def y_to_rank(y):
     if perspective == 'white':
         return 9-int((y+size/2)/size)
-    if perspective == 'black':
+    elif perspective == 'black':
         return int((y+size/2)/size)
 
 def file_to_x(file):
     if perspective == 'white':
         return letters.index(file)*size+size
-    if perspective == 'black':
-        return 9-letters.index(file)*size+size
+    elif perspective == 'black':
+        return (7-letters.index(file))*size+size
 
 def rank_to_y(rank):
     if perspective == 'white':
         return (9-rank)*size
-    if perspective == 'black':
-        return 9-(9-rank)*size
+    elif perspective == 'black':
+        return (rank)*size
 
 #perspective
 
@@ -38,11 +38,65 @@ def flip_board():
     global perspective
     if perspective == 'white':
         perspective = 'black'
-    if perspective == 'black':
+    elif perspective == 'black':
         perspective = 'white'
+    setup()
 
-board_flipper = Button(w, text='flip board', font=('consolas',16), command=flip_board)
+board_flipper = Button(w, text='flip board', font=('consolas',8), command=flip_board)
 board_flipper.pack()
+
+def setup():
+    global white_pieces, black_pieces, file_holders, rank_holders
+    print(perspective)
+    #reset board        
+    for wp in white_pieces:
+        board.delete(wp)
+    for bp in black_pieces:
+        board.delete(bp)
+    white_pieces = []
+    for f in letters:
+        white_pieces.append(pawn(f, 2, 'white'))
+        
+    white_pieces.append(knight('b', 1, 'white'))
+    white_pieces.append(knight('g', 1, 'white'))
+    white_pieces.append(bishop('c', 1, 'white'))
+    white_pieces.append(bishop('f', 1, 'white'))
+    white_pieces.append(rook('a', 1, 'white'))
+    white_pieces.append(rook('h', 1, 'white'))
+    white_pieces.append(queen('d', 1, 'white'))
+    white_pieces.append(king('e', 1, 'white'))
+
+    black_pieces = []
+
+    for f in letters:
+        black_pieces.append(pawn(f, 7, 'black'))
+        
+    black_pieces.append(knight('b', 8, 'black'))
+    black_pieces.append(knight('g', 8, 'black'))
+    black_pieces.append(bishop('c', 8, 'black'))
+    black_pieces.append(bishop('f', 8, 'black'))
+    black_pieces.append(rook('a', 8, 'black'))
+    black_pieces.append(rook('h', 8, 'black'))
+    black_pieces.append(queen('d', 8, 'black'))
+    black_pieces.append(king('e', 8, 'black'))
+    #reset coords
+    for r in rank_holders:
+        board.delete(r)
+    for f in file_holders:
+        board.delete(f)
+    rank_holders = []
+    file_holders = []
+
+    for r in range(1,9):
+        if perspective == 'white':
+            rank_holders.append(board.create_text(size/4,r*size,text=str(9-r), font=('consolas',16)))
+        if perspective == 'black':
+            rank_holders.append(board.create_text(size/4,r*size,text=str(r), font=('consolas',16)))
+
+
+    for f in letters:
+        file_holders.append(board.create_text(file_to_x(f),size*9-size/4,text=f.lower(), font=('consolas',16)))
+    
 #board squares
 
 letters='abcdefgh'
@@ -62,14 +116,17 @@ for r in range(1,9):
         board.create_rectangle(file_to_x(f)+size/2,rank_to_y(r)+size/2, file_to_x(f)-size/2,rank_to_y(r)-size/2, fill=square_color, outline=square_color)
 
 # this places the coordinates
+rank_holders = []
+file_holders = []
+
 for r in range(1,9):
-    board.create_text(size/4,r*size,text=str(9-r), font=('consolas',16))
+    rank_holders.append(board.create_text(size/4,r*size,text=str(9-r), font=('consolas',16)))
 
 for f in letters:
-    board.create_text(file_to_x(f),size*9-size/4,text=f.lower(), font=('consolas',16))
+    file_holders.append(board.create_text(file_to_x(f),size*9-size/4,text=f.lower(), font=('consolas',16)))
     
-#pieces
 
+#pieces        
 white_pawn = PhotoImage(file="white pawn.gif")
 white_knight = PhotoImage(file="white knight.gif")
 white_bishop = PhotoImage(file="white bishop.gif")
@@ -158,37 +215,37 @@ def check_click(event):
         file = None
     if rank not in range(1,9):
         rank = None
-    for piece in white_pieces:
-        if x_to_file(board.coords(piece)[0])==file and y_to_rank(board.coords(piece)[1])==rank:
-            board.coords(selection,file_to_x(file)+size/2,rank_to_y(rank)+size/2, file_to_x(file)-size/2,rank_to_y(rank)-size/2)
-            if board.itemcget(piece, 'image') == 'pyimage1':
-                print('')
-            if board.itemcget(piece, 'image') == 'pyimage2':
-                print('N')
-            if board.itemcget(piece, 'image') == 'pyimage3':
-                print('B')
-            if board.itemcget(piece, 'image') == 'pyimage4':
-                print('R')
-            if board.itemcget(piece, 'image') == 'pyimage5':
-                print('Q')
-            if board.itemcget(piece, 'image') == 'pyimage6':
-                print('K')
-    for piece in black_pieces:
-        if x_to_file(board.coords(piece)[0])==file and y_to_rank(board.coords(piece)[1])==rank:
-            board.coords(selection,file_to_x(file)+size/2,rank_to_y(rank)+size/2, file_to_x(file)-size/2,rank_to_y(rank)-size/2)
-            if board.itemcget(piece, 'image') == 'pyimage7':
-                print('')
-            if board.itemcget(piece, 'image') == 'pyimage8':
-                print('N')
-            if board.itemcget(piece, 'image') == 'pyimage9':
-                print('B')
-            if board.itemcget(piece, 'image') == 'pyimage10':
-                print('R')
-            if board.itemcget(piece, 'image') == 'pyimage11':
-                print('Q')
-            if board.itemcget(piece, 'image') == 'pyimage12':
-                print('K')
+    if not(rank == None or file == None):
+        for piece in white_pieces:
+            if x_to_file(board.coords(piece)[0])==file and y_to_rank(board.coords(piece)[1])==rank:
+                board.coords(selection,file_to_x(file)+size/2,rank_to_y(rank)+size/2, file_to_x(file)-size/2,rank_to_y(rank)-size/2)
+                if board.itemcget(piece, 'image') == 'pyimage1':
+                    print('')
+                if board.itemcget(piece, 'image') == 'pyimage2':
+                    print('N')
+                if board.itemcget(piece, 'image') == 'pyimage3':
+                    print('B')
+                if board.itemcget(piece, 'image') == 'pyimage4':
+                    print('R')
+                if board.itemcget(piece, 'image') == 'pyimage5':
+                    print('Q')
+                if board.itemcget(piece, 'image') == 'pyimage6':
+                    print('K')
+        for piece in black_pieces:
+            if x_to_file(board.coords(piece)[0])==file and y_to_rank(board.coords(piece)[1])==rank:
+                board.coords(selection,file_to_x(file)+size/2,rank_to_y(rank)+size/2, file_to_x(file)-size/2,rank_to_y(rank)-size/2)
+                if board.itemcget(piece, 'image') == 'pyimage7':
+                    print('')
+                if board.itemcget(piece, 'image') == 'pyimage8':
+                    print('N')
+                if board.itemcget(piece, 'image') == 'pyimage9':
+                    print('B')
+                if board.itemcget(piece, 'image') == 'pyimage10':
+                    print('R')
+                if board.itemcget(piece, 'image') == 'pyimage11':
+                    print('Q')
+                if board.itemcget(piece, 'image') == 'pyimage12':
+                    print('K')
     
 board.bind_all('<Button-1>', check_click)
 
-        
